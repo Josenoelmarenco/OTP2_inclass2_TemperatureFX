@@ -1,0 +1,85 @@
+/* StudyFlow-style palette: indigo accent on a light neutral background. */
+
+.root-pane {
+    -fx-background-color: #F3F4F6;
+}
+
+.header {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.app-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4F46E5;
+}
+
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12px;
+    -fx-padding: 18px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.06), 12, 0, 0, 3);
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #374151;
+}
+
+.text-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D1D5DB;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 8px;
+}
+
+.text-field:focused {
+    -fx-border-color: #4F46E5;
+    -fx-border-width: 2px;
+}
+
+.primary-button {
+    -fx-background-color: #4F46E5;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #4338CA;
+}
+
+.result-value {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4F46E5;
+}
+
+.badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #B45309;
+}
+
+.stats {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6B7280;
+}
+
+.status-bar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1px 0 0 0;
+    -fx-font-size: 12px;
+}

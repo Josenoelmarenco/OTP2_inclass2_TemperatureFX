@@ -1,0 +1,83 @@
+# Kubernetes manifest for the Temperature FX application.
+#
+# Apply it on minikube with:
+#     minikube start
+#     minikube image load jnmarenco/otp2-temperature-fx:latest   # or let it pull from Docker Hub
+#     kubectl apply -f k8s/temperature-fx.yaml
+#     kubectl get pods -w
+#
+# The container has no DISPLAY here, so the entrypoint starts the application
+# on a virtual framebuffer (Xvfb) and the pod stays in the Running state.
+# To send the window to XQuartz on the host instead, set DISPLAY to
+# host.minikube.internal:0 in the ConfigMap below.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: temperature-fx-config
+  labels:
+    app: temperature-fx
+data:
+  # Language the interface starts in: en, fi, sv, ja or ar
+  APP_LANG: "en"
+  # Embedded H2 database stored on the mounted volume. AUTO_SERVER_PORT makes
+  # the database reachable through the Service below.
+  DB_URL: "jdbc:h2:file:/app/data/tempfx;MODE=MySQL;AUTO_SERVER=TRUE;AUTO_SERVER_PORT=9092"
+  DB_USER: "sa"
+  DB_PASSWORD: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temperature-fx
+  labels:
+    app: temperature-fx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temperature-fx
+  template:
+    metadata:
+      labels:
+        app: temperature-fx
+    spec:
+      containers:
+        - name: temperature-fx
+          image: jnmarenco/otp2-temperature-fx:latest
+          # Use the locally loaded image when it exists, otherwise pull it.
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: temperature-fx-config
+          ports:
+            - name: h2-tcp
+              containerPort: 9092
+          volumeMounts:
+            - name: database
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1536Mi"
+      volumes:
+        - name: database
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: temperature-fx
+  labels:
+    app: temperature-fx
+spec:
+  type: ClusterIP
+  selector:
+    app: temperature-fx
+  ports:
+    - name: h2-tcp
+      port: 9092
+      targetPort: 9092
