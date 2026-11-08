@@ -181,7 +181,7 @@ public final class Database {
      * @param script the whole script
      * @return the statements, trimmed, without comments or empty entries
      */
-    static List<String> splitStatements(String script) {
+    public static List<String> splitStatements(String script) {
         List<String> statements = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         boolean insideLiteral = false;
@@ -245,7 +245,7 @@ public final class Database {
      * @return the table an INSERT writes into, or {@code null} when the
      *         statement is not an INSERT
      */
-    static String insertTargetTable(String sql) {
+    public static String insertTargetTable(String sql) {
         Matcher matcher = INSERT_TARGET.matcher(sql.trim());
         return matcher.find() ? matcher.group(1).toLowerCase(Locale.ROOT) : null;
     }
@@ -256,7 +256,7 @@ public final class Database {
      * @return {@code true} when the table already holds at least one row
      * @throws SQLException when the query fails
      */
-    static boolean hasRows(Connection connection, String table) throws SQLException {
+    public static boolean hasRows(Connection connection, String table) throws SQLException {
         try (Statement statement = connection.createStatement();
              ResultSet results = statement.executeQuery("SELECT COUNT(*) FROM " + table)) {
             return results.next() && results.getInt(1) > 0;
