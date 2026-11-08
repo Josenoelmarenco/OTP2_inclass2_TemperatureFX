@@ -94,8 +94,34 @@ class UnitTranslationDaoTest {
         @ValueSource(strings = {"fi", "sv", "ja", "ar"})
         @DisplayName("the translations are really different texts, not copies")
         void translationsDiffer(String language) throws SQLException {
-            String english = nameOf("celsius", "en");
-            assertNotEquals(english, nameOf("celsius", language));
+            // "kilometre" is used rather than a temperature scale on purpose: see
+            // properNounsAreIdenticalOnPurpose() below for why.
+            String english = nameOf("kilometre", "en");
+            assertNotEquals(english, nameOf("kilometre", language),
+                    "kilometre should not read the same in English and " + language);
+        }
+
+        @Test
+        @DisplayName("the temperature scales keep their proper names in the Latin languages")
+        void properNounsAreIdenticalOnPurpose() throws SQLException {
+            // Celsius, Fahrenheit and Kelvin are named after people, so Finnish and
+            // Swedish spell them exactly as English does. That is correct
+            // localization, not a missing translation: the rows really exist, which
+            // is what usedFallback() == false proves. Only the non-Latin scripts
+            // transliterate them.
+            for (String unitKey : List.of("celsius", "fahrenheit", "kelvin")) {
+                String english = nameOf(unitKey, "en");
+                assertAll(
+                        () -> assertEquals(english, nameOf(unitKey, "fi")),
+                        () -> assertEquals(english, nameOf(unitKey, "sv")),
+                        () -> assertFalse(dao.findByUnitKey(unitKey, "fi").orElseThrow()
+                                        .usedFallback(),
+                                unitKey + " must have a real Finnish row, not a fallback"),
+                        () -> assertNotEquals(english, nameOf(unitKey, "ja"),
+                                unitKey + " is transliterated in Japanese"),
+                        () -> assertNotEquals(english, nameOf(unitKey, "ar"),
+                                unitKey + " is transliterated in Arabic"));
+            }
         }
 
         @Test
