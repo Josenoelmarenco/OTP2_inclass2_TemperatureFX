@@ -13,5 +13,5 @@ if [ -n "$DISPLAY" ]; then
     exec mvn -q -B javafx:run
 else
     echo "No DISPLAY set - starting a virtual framebuffer (Xvfb)"
-    exec xvfb-run -a --server-args="-screen 0 1280x800x24" mvn -q -B javafx:run
+    exec xvfb-run -a --server-args="-screen 0 1440x900x24" mvn -q -B javafx:run
 fi

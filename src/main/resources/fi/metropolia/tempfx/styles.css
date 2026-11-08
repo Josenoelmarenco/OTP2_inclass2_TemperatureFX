@@ -83,3 +83,28 @@
     -fx-border-width: 1px 0 0 0;
     -fx-font-size: 12px;
 }
+
+/* --- Added for the database-localization assignment ---------------------- */
+
+/* Explains that the unit names below come from the database, not from the
+   .properties files. */
+.section-hint {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+
+/* The localized unit description read from unit_translation. */
+.unit-description {
+    -fx-text-fill: #475569;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+/* The view grew a second table, so the content scrolls on small screens. */
+.content-scroll {
+    -fx-background-color: transparent;
+}
+
+.content-scroll > .viewport {
+    -fx-background-color: transparent;
+}
