@@ -324,6 +324,64 @@ kubectl delete -f k8s/temperature-fx.yaml
 
 ---
 
+## Static analysis with SonarQube
+
+Set up for in-class assignment 7. The server runs in Docker, so no SonarQube
+installation and no extra JDK are needed on the laptop.
+
+> The course handout targets Windows and mentions JDK 17. SonarQube Community
+> Build now requires **Java 21 or 25** on the server and **Java 21+** for the
+> Maven scanner, so the JDK 17 step in the handout no longer applies. Running
+> the server in a container sidesteps the question entirely.
+
+### 1. Start the server
+
+```bash
+docker run -d --name sonarqube -p 9000:9000 sonarqube:community
+```
+
+Open <http://localhost:9000>, log in with `admin` / `admin` and set a new
+password when prompted. The first start takes a minute or two.
+
+### 2. Create a token
+
+In SonarQube: avatar (top right) → **My Account** → **Security** → **Generate
+Tokens**. Then export it, never commit it:
+
+```bash
+export SONAR_TOKEN="the-token-you-generated"
+```
+
+### 3. Run the analysis
+
+```bash
+mvn clean verify
+mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN
+```
+
+`mvn clean verify` runs the tests and writes `target/site/jacoco/jacoco.xml`;
+`sonar:sonar` then imports that file, so the SonarQube dashboard shows the same
+coverage as the JaCoCo report. Results appear at
+<http://localhost:9000/projects>.
+
+### Configuration
+
+| Where | What it configures |
+|---|---|
+| `pom.xml`, the `<sonar.*>` properties | project key, host URL, Java level, path to the JaCoCo XML report, coverage exclusions |
+| `pom.xml`, `sonar-maven-plugin` | pins the scanner version so `mvn sonar:sonar` is reproducible |
+| `sonar-project.properties` | the same settings for the standalone `sonar-scanner` CLI |
+
+The JavaFX view classes (`MainApp`, `Main`, `ui/**`) are excluded from the
+**coverage metric** because they cannot be unit tested without a graphical
+toolkit. They are still analysed for bugs, code smells and vulnerabilities.
+Removing `sonar.coverage.exclusions` from `pom.xml` shows the raw figure.
+
+The token is never written to a file. It is read from `SONAR_TOKEN`, which is
+why both configuration files are safe to commit.
+
+---
+
 ## CI/CD with Jenkins
 
 The `Jenkinsfile` runs: checkout → build → unit tests → JaCoCo report →
@@ -343,6 +401,7 @@ id `dockerhub`.
 ├── pom.xml
 ├── README.md
 ├── db/init-mariadb.sql            # the same script with utf8mb4, for MariaDB
+├── sonar-project.properties       # SonarQube settings for the sonar-scanner CLI
 ├── k8s/temperature-fx.yaml        # ConfigMap + Deployment + Service
 └── src
     ├── main

@@ -18,6 +18,22 @@
         <junit.version>5.11.4</junit.version>
         <h2.version>2.3.232</h2.version>
         <main.class>fi.metropolia.tempfx.MainApp</main.class>
+
+        <!-- Static analysis with SonarQube (in-class assignment 7). -->
+        <sonar.projectKey>otp2-temperature-fx</sonar.projectKey>
+        <sonar.projectName>Temperature FX</sonar.projectName>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.java.source>21</sonar.java.source>
+        <!-- JaCoCo writes this file during "mvn verify"; the scanner imports it
+             to report coverage. The XML report is the one SonarQube reads, not
+             the HTML one and not jacoco.exec. -->
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <!-- The JavaFX view classes cannot be unit tested without a graphical
+             toolkit, so they are left out of the COVERAGE metric only. They are
+             still analysed for bugs, smells and vulnerabilities. Delete this
+             line to see the raw, unadjusted coverage figure. -->
+        <sonar.coverage.exclusions>**/MainApp.java,**/Main.java,**/ui/**</sonar.coverage.exclusions>
+        <sonar.scanner.version>5.8.0.7211</sonar.scanner.version>
     </properties>
 
     <dependencies>
@@ -88,6 +104,15 @@
                 <configuration>
                     <mainClass>${main.class}</mainClass>
                 </configuration>
+            </plugin>
+
+            <!-- SonarScanner for Maven. Declared only to pin the version, so that
+                 "mvn sonar:sonar" is reproducible. It has no execution bound to
+                 the lifecycle: the analysis is started on demand. -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.scanner.version}</version>
             </plugin>
 
             <!-- Code coverage: agent during tests + HTML report in target/site/jacoco -->
